@@ -4,7 +4,7 @@ import Spinner from './Spinner';
 import PropTypes from 'prop-types';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-const News = ({ country = 'in', category = 'general', pageSize, setProgress, apikey }) => {
+const News = ({ country = 'us', category = 'business', pageSize = 10, setProgress, apikey }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalResults, setTotalResults] = useState(0);
@@ -19,18 +19,30 @@ const News = ({ country = 'in', category = 'general', pageSize, setProgress, api
       setProgress(0);
     }
     setLoading(true);
-    const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apikey}&page=${pageToLoad}&pageSize=${pageSize}`;    
+    // const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apikey}&page=${pageToLoad}&pageSize=${pageSize}`;    
+    const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${apikey}&page=${pageToLoad}&pageSize=${pageSize}`;    
+    console.log('Fetching news from URL:', url);
     try {
-      const data = await fetch(url);
+      const response = await fetch(url, {
+        method: "GET",
+      });
       if (initialLoad) {
         setProgress(30);
       }
-      const parsedData = await data.json();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const parsedData = await response.json();
+      console.log('API Response:', parsedData);
       if (initialLoad) {
         setProgress(70);
       }
       if (parsedData && parsedData.articles) {
-        setArticles((prevArticles) => initialLoad ? parsedData.articles : prevArticles.concat(parsedData.articles));
+        setArticles((prevArticles) => {
+          const newArticles = initialLoad ? parsedData.articles : prevArticles.concat(parsedData.articles);
+          console.log('New Articles:', newArticles);
+          return newArticles;
+        });
         setTotalResults(parsedData.totalResults);
         setLoading(false);
         if (initialLoad) {
