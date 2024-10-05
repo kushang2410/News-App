@@ -19,11 +19,11 @@ const News = ({ country = 'us', category = 'business', pageSize = 10, setProgres
       setProgress(0);
     }
     setLoading(true);
-    // const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apikey}&page=${pageToLoad}&pageSize=${pageSize}`;    
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/corsdemo';
     const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${apikey}&page=${pageToLoad}&pageSize=${pageSize}`;    
     console.log('Fetching news from URL:', url);
     try {
-      const response = await fetch(url, {
+      const response = await fetch(proxyUrl + url, {
         method: "GET",
       });
       if (initialLoad) {
